@@ -1,0 +1,6 @@
+api:
+  base_url: "https://api.icicidirect.com"
+  client_id: "your_client_id"
+  client_secret: "your_client_secret"
+  app_key: "your_app_key"
+  redirect_uri: "https://your_redirect_uri.com/callback"
