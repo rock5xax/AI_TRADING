@@ -1,0 +1,7 @@
+breeze-connect
+motor
+pandas
+numpy
+pymongo
+pytest
+asyncio

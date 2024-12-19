@@ -4,3 +4,6 @@ api:
   client_secret: "your_client_secret"
   app_key: "your_app_key"
   redirect_uri: "https://your_redirect_uri.com/callback"
+  endpoints:
+    historical: "/api/v1/historical"
+    realtime: "/api/v1/realtime"

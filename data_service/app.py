@@ -3,6 +3,11 @@ from api.session_manager import session_bp
 from api.fetch_historical_data import historical_bp
 from api.fetch_realtime_data import realtime_bp
 import os
+from dotenv import load_dotenv
+import logging
+
+# Load environment variables
+load_dotenv()
 
 def create_app():
     """
@@ -10,7 +15,7 @@ def create_app():
     """
     app = Flask(__name__)
 
-    # Load configuration from environment variables or default
+    # Load configuration
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "default_secret_key")
 
     # Register Blueprints
@@ -21,6 +26,9 @@ def create_app():
     # Define a root route
     @app.route("/", methods=["GET"])
     def index():
+        """
+        Root endpoint providing API details.
+        """
         return jsonify({
             "message": "Welcome to the AI Trading Data Service API",
             "endpoints": {
@@ -30,10 +38,25 @@ def create_app():
             }
         })
 
+    # Error Handlers
+    @app.errorhandler(404)
+    def handle_404(error):
+        return jsonify({"error": "Resource not found"}), 404
+
+    @app.errorhandler(500)
+    def handle_500(error):
+        return jsonify({"error": "Internal server error"}), 500
+
     return app
 
 
 if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    logger.info("Starting the AI Trading Data Service API...")
 
+    # Create and run the app
+    app = create_app()
+    app.run(debug=os.getenv("DEBUG", "True") == "True", host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    

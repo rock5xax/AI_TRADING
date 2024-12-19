@@ -1,0 +1,20 @@
+data_service:
+  sources:
+    - name: breeze
+      priority: 1
+    - name: yfinance
+      priority: 2
+  
+  preprocessing:
+    technical_indicators:
+      - rsi
+      - moving_average
+      - volatility
+    
+    cleaning:
+      handle_missing: interpolate
+      remove_outliers: true
+
+  storage:
+    type: mongodb
+    collection_prefix: data_service_

@@ -1,0 +1,19 @@
+application:
+  name: trading_system
+  version: 1.0.0
+  environment: base
+
+logging:
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: logs/application.log
+
+data:
+  sources:
+    - yfinance
+    - breeze
+  lookback_period: 252  # 1 year of trading days
+
+database:
+  type: mongodb
+  default_database: trading_data
