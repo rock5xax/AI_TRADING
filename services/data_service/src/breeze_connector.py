@@ -5,6 +5,14 @@ from typing import Dict, Any, Optional, List
 from breeze_connect import BreezeConnect
 from datetime import datetime, timedelta
 from pathlib import Path
+from breeze_connect import BreezeConnect
+from config.config import BREEZE_API_KEY, BREEZE_API_SECRET, BREEZE_API_BASE_URL
+
+
+def initialize_breeze():
+    breeze = BreezeConnect(api_key=BREEZE_API_KEY)
+    breeze.generate_session(api_secret=BREEZE_API_SECRET)
+    return breeze
 
 class BreezeConnector:
     """A connector class for the Breeze API with enhanced functionality and error handling."""

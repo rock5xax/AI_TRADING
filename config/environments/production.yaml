@@ -1,0 +1,6 @@
+breeze_connector:
+  api_key: "your_prod_api_key"
+  secret_key: "your_prod_secret_key"
+
+logging:
+  level: "INFO"

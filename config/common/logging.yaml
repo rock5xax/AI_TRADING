@@ -1,23 +1,27 @@
-logging:
-  version: 1
-  formatters:
-    standard:
-      format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-    detailed:
-      format: '%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s'
+# logging:
+#   version: 1
+#   formatters:
+#     standard:
+#       format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+#     detailed:
+#       format: '%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s'
   
-  handlers:
-    console:
-      class: logging.StreamHandler
-      level: INFO
-      formatter: standard
+#   handlers:
+#     console:
+#       class: logging.StreamHandler
+#       level: INFO
+#       formatter: standard
     
-    file:
-      class: logging.FileHandler
-      filename: logs/application.log
-      level: DEBUG
-      formatter: detailed
+#     file:
+#       class: logging.FileHandler
+#       filename: logs/application.log
+#       level: DEBUG
+#       formatter: detailed
   
-  root:
-    level: INFO
-    handlers: [console, file]
+#   root:
+#     level: INFO
+#     handlers: [console, file]
+
+logging:
+  level: "INFO"
+  file: "logs/app.log"

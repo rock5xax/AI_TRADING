@@ -1,19 +1,34 @@
-application:
-  name: trading_system
-  version: 1.0.0
-  environment: base
+# application:
+#   name: trading_system
+#   version: 1.0.0
+#   environment: base
 
-logging:
-  level: INFO
-  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-  file: logs/application.log
+# logging:
+#   level: INFO
+#   format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+#   file: logs/application.log
 
-data:
-  sources:
-    - yfinance
-    - breeze
-  lookback_period: 252  # 1 year of trading days
+# data:
+#   sources:
+#     - yfinance
+#     - breeze
+#   lookback_period: 252  # 1 year of trading days
 
-database:
-  type: mongodb
-  default_database: trading_data
+# database:
+#   type: mongodb
+#   default_database: trading_data
+
+breeze_connector:
+  base_url: "https://api.icicidirect.com"
+  api_key: "your_default_api_key"
+  secret_key: "your_default_secret_key"
+
+data_service:
+  stocks_to_fetch:
+    - "RELIANCE"
+    - "TCS"
+    - "INFY"
+
+strategies:
+  default_strategy: "mean_reversion"
+
