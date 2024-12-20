@@ -1,34 +1,32 @@
-# environment: development
+# Environment: Development Configuration
 
-# application:
-#   debug: true
+application:
+  debug: true
 
-# data_service:
-#   stocks_to_fetch:
-#     - RELIANCE
-#     - NIFTY
-#     - INFY
-#     - HDFCBANK
-  
-#   api:
-#     retry_attempts: 3
-#     timeout: 30
+data_service:
+  stocks_to_fetch:
+    - RELIANCE
+    - NIFTY
+    - INFY
+    - HDFCBANK
+  api:
+    retry_attempts: 3
+    timeout: 30
 
-# caching:
-#   enabled: true
-#   ttl: 3600  # 1 hour
+caching:
+  enabled: true
+  ttl: 3600  # 1 hour
 
-# ml_model:
-#   training:
-#     batch_size: 64
-#     learning_rate: 0.001
-  
-#   prediction:
-#     threshold: 0.6
+ml_model:
+  training:
+    batch_size: 64
+    learning_rate: 0.001
+  prediction:
+    threshold: 0.6
 
 breeze_connector:
-  api_key: "your_dev_api_key"
-  secret_key: "your_dev_secret_key"
+  api_key: "encrypted:gAAAAABk1234567..."
+  secret_key: "encrypted:gAAAAABk9876543..."
 
 logging:
   level: "DEBUG"
