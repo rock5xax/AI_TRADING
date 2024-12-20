@@ -12,13 +12,16 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 class ConfigManager:
-    def __init__(self, environment: str = None):
+    def __init__(self,config_dir="config/environments", environment: str = None, required_keys=None):
         """
         Initialize Configuration Manager.
         
         Args:
             environment (str, optional): Specific environment to load. Defaults to 'development'.
         """
+        self.config_dir = config_dir
+        self.required_keys = required_keys if required_keys else []
+        logging.basicConfig(level=logging.INFO)
         self.environment = environment or os.getenv("APP_ENV", "development")
         self._service_config_cache = {}
         self.config = self._load_configurations()
@@ -29,6 +32,46 @@ class ConfigManager:
         logging_level = self.config.get("logging.level", "INFO")
         logger.info(f"Breeze API Key: {api_key}")
         logger.info(f"Logging Level: {logging_level}")
+
+    def load_config(self, env=None):
+        """Load configuration based on the environment."""
+        env = env or os.getenv("APP_ENV", "development")
+        config_path = os.path.join(self.config_dir, f"{env}.yaml")
+
+        try:
+            with open(config_path, 'r') as file:
+                config = yaml.safe_load(file)
+            
+            # Validate configuration keys
+            missing_keys = [key for key in self.required_keys if key not in config]
+            if missing_keys:
+                raise Exception(f"Missing required configuration keys: {missing_keys}")
+
+            logging.info(f"Successfully loaded configuration for environment: {env}")
+            return config
+
+        except FileNotFoundError:
+            logging.error(f"Configuration file {config_path} not found.")
+            raise Exception(f"Configuration file {config_path} not found.")
+        except yaml.YAMLError as e:
+            logging.error(f"Error parsing YAML configuration: {e}")
+            raise Exception(f"Error parsing YAML configuration: {e}")
+        except Exception as e:
+            logging.error(f"Configuration loading failed: {e}")
+            raise
+
+    # def load_config(self, env="development"):
+    #     """Load configuration based on the environment."""
+    #     config_path = os.path.join(self.config_dir, f"{env}.yaml")
+    #     try:
+    #         with open(config_path, 'r') as file:
+    #             config = yaml.safe_load(file)
+    #         return config
+    #     except FileNotFoundError:
+    #         raise Exception(f"Configuration file {config_path} not found.")
+    #     except yaml.YAMLError as e:
+    #         raise Exception(f"Error parsing YAML configuration: {e}")
+
 
     def _load_configurations(self) -> Dict[str, Any]:
         """

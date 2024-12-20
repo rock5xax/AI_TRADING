@@ -1,6 +1,9 @@
 import os
 import json
 import logging
+import requests
+from pathlib import Path
+from cryptography.fernet import Fernet
 from typing import Dict, Any, Optional, List
 from breeze_connect import BreezeConnect
 from datetime import datetime, timedelta
@@ -19,7 +22,7 @@ class BreezeConnector:
     
     VALID_INTERVALS = ['1minute', '5minute', '15minute', '30minute', '1day']
     
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str, api_key_env="BREEZE_API_KEY", secret_key_env="BREEZE_SECRET_KEY", base_url="https://api.icicidirect.com/api"):
         """
         Initialize Breeze API Connection
         
@@ -30,13 +33,85 @@ class BreezeConnector:
             FileNotFoundError: If config file doesn't exist
             ValueError: If config file is missing required fields
             ConnectionError: If API connection fails
+        
+        Initialize BreezeConnector with API credentials and base URL.
+
+        :param api_key_env: Environment variable for API key.
+        :param secret_key_env: Environment variable for secret key.
+        :param base_url: Base URL for the Breeze API.
         """
+        
+        self.api_key = self._decrypt_key(os.getenv(api_key_env))
+        self.secret_key = self._decrypt_key(os.getenv(secret_key_env))
+        self.base_url = base_url
+
+        if not self.api_key or not self.secret_key:
+            logging.error("API key or secret key is missing after decryption.")
+            raise ValueError("API key or secret key is invalid.")
         self.logger = self._setup_logger()
         self.config_path = Path(config_path)
         self.connected = False
         self._load_config()
         self._initialize_connection()
-        
+    @staticmethod
+    def _decrypt_key(encrypted_key):
+        """Decrypt an encrypted API key or secret key."""
+        if not encrypted_key:
+            logging.error("Encrypted key is missing.")
+            raise ValueError("Missing encrypted key.")
+
+        encryption_key = os.getenv("ENCRYPTION_KEY", None)
+        if not encryption_key:
+            logging.error("ENCRYPTION_KEY environment variable not set.")
+            raise ValueError("Missing encryption key.")
+
+        cipher = Fernet(encryption_key)
+        try:
+            decrypted_key = cipher.decrypt(encrypted_key.encode()).decode()
+            return decrypted_key
+        except Exception as e:
+            logging.error("Error decrypting key: [REDACTED]")
+            raise ValueError("Decryption failed.")
+
+    def fetch_data(self, endpoint, params=None):
+        """
+        Fetch data from the Breeze API.
+
+        :param endpoint: API endpoint to fetch data from.
+        :param params: Query parameters for the API call.
+        :return: JSON response from the API.
+        """
+        url = f"{self.base_url}/{endpoint}"
+        headers = {
+            "Content-Type": "application/json",
+            "X-API-KEY": self.api_key,
+            "X-SECRET-KEY": self.secret_key
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.Timeout:
+            logging.error(f"Timeout error while fetching data from {url}.")
+            raise
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching data from {url}: {e}")
+            raise
+
+    def validate_connection(self):
+        """Validate connection to the Breeze API."""
+        try:
+            response = self.fetch_data("validate")
+            logging.info("Connection validated successfully.")
+            return True
+        except requests.exceptions.RequestException:
+            logging.error("Connection validation failed: Unable to reach the API endpoint.")
+            return False
+        except Exception as e:
+            logging.error(f"Connection validation failed: {e}")
+            return False
+
     @staticmethod
     def _setup_logger() -> logging.Logger:
         """Set up logging configuration."""
