@@ -9,7 +9,7 @@ from breeze_connect import BreezeConnect
 from datetime import datetime, timedelta
 from pathlib import Path
 from breeze_connect import BreezeConnect
-from config.config import BREEZE_API_KEY, BREEZE_API_SECRET, BREEZE_API_BASE_URL
+import project_config config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

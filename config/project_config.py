@@ -9,7 +9,7 @@ from pathlib import Path
 # Initialize logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
+SECURITY_MASTER_URL = "https://api.icicidirect.com/apiuser/login?api_key=YOUR_API_KEY"
 
 class ConfigManager:
     def __init__(self,config_dir="config/environments", environment: str = None, required_keys=None):
