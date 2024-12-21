@@ -1,21 +1,21 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*.pyo
+# # Byte-compiled / optimized / DLL files
+# __pycache__/
+# *.py[cod]
+# *.pyo
 
-# Logs and database
-*.log
-*.sqlite3
+# # Logs and database
+# *.log
+# *.sqlite3
 
-# Environment files
-.env
-*.env
+# # Environment files
+# .env
+# *.env
 
-# OS files
-.DS_Store
+# # OS files
+# .DS_Store
 
-# Virtual environment
-venv/
-*.conda
-*.yml
-*.json
+# # Virtual environment
+# venv/
+# *.conda
+# *.yml
+# *.json
