@@ -11,67 +11,42 @@ from pathlib import Path
 from breeze_connect import BreezeConnect
 from config.config import BREEZE_API_KEY, BREEZE_API_SECRET, BREEZE_API_BASE_URL
 
-
-def initialize_breeze():
-    breeze = BreezeConnect(api_key=BREEZE_API_KEY)
-    breeze.generate_session(api_secret=BREEZE_API_SECRET)
-    return breeze
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class BreezeConnector:
     """A connector class for the Breeze API with enhanced functionality and error handling."""
     
     VALID_INTERVALS = ['1minute', '5minute', '15minute', '30minute', '1day']
     
-    def __init__(self, config_path: str, api_key_env="BREEZE_API_KEY", secret_key_env="BREEZE_SECRET_KEY", base_url="https://api.icicidirect.com/api"):
-        """
-        Initialize Breeze API Connection
-        
-        Args:
-            config_path (str): Path to configuration file
-            
-        Raises:
-            FileNotFoundError: If config file doesn't exist
-            ValueError: If config file is missing required fields
-            ConnectionError: If API connection fails
-        
-        Initialize BreezeConnector with API credentials and base URL.
-
-        :param api_key_env: Environment variable for API key.
-        :param secret_key_env: Environment variable for secret key.
-        :param base_url: Base URL for the Breeze API.
-        """
-        
-        self.api_key = self._decrypt_key(os.getenv(api_key_env))
-        self.secret_key = self._decrypt_key(os.getenv(secret_key_env))
-        self.base_url = base_url
-
-        if not self.api_key or not self.secret_key:
-            logging.error("API key or secret key is missing after decryption.")
-            raise ValueError("API key or secret key is invalid.")
-        self.logger = self._setup_logger()
-        self.config_path = Path(config_path)
-        self.connected = False
-        self._load_config()
+    def __init__(self):
+        """Initialize Breeze API Connection"""
+        self._load_credentials()
         self._initialize_connection()
-    @staticmethod
-    def _decrypt_key(encrypted_key):
-        """Decrypt an encrypted API key or secret key."""
-        if not encrypted_key:
-            logging.error("Encrypted key is missing.")
-            raise ValueError("Missing encrypted key.")
+        self.connected = False
 
-        encryption_key = os.getenv("ENCRYPTION_KEY", None)
-        if not encryption_key:
-            logging.error("ENCRYPTION_KEY environment variable not set.")
-            raise ValueError("Missing encryption key.")
+    def _load_credentials(self) -> None:
+        """Load credentials from environment variables"""
+        self.api_key = os.getenv('BREEZE_API_KEY')
+        self.session_token = os.getenv('BREEZE_SESSION_TOKEN')
+        
+        if not all([self.api_key, self.session_token]):
+            raise ValueError("Missing required environment variables: BREEZE_API_KEY, BREEZE_SESSION_TOKEN")
 
-        cipher = Fernet(encryption_key)
+    def _initialize_connection(self) -> None:
+        """Initialize Breeze API connection"""
         try:
-            decrypted_key = cipher.decrypt(encrypted_key.encode()).decode()
-            return decrypted_key
+            self.api = BreezeConnect(api_key=self.api_key)
+            self.api.generate_session(
+                api_key=self.api_key,
+                session_token=self.session_token
+            )
+            self.connected = True
+            logger.info("Successfully connected to Breeze API")
         except Exception as e:
-            logging.error("Error decrypting key: [REDACTED]")
-            raise ValueError("Decryption failed.")
+            logger.error(f"Failed to connect to Breeze API: {e}")
+            raise
+    
 
     def fetch_data(self, endpoint, params=None):
         """

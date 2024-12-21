@@ -2,7 +2,7 @@ import pandas as pd
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import logging
-import os
+
 
 # Local imports
 from src.breeze_connector import BreezeConnector
